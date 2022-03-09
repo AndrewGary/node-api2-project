@@ -38,8 +38,12 @@ router.post('/', (req, res) => {
 
     Posts.insert(req.body)
     .then(post => {
-        console.log('postttttt: ', post);
-        res.status(201).json(post);
+        // console.log('postttttt: ', post);
+        // res.status(201).json(post);
+        Posts.findById(post.id)
+        .then(innerPost => {
+            res.status(201).json(innerPost);
+        })
     })
     .catch(error => {
         res.status(500).json({ message: 'There was an error while saving the post to the database'})
@@ -88,11 +92,19 @@ router.put('/:id', (req, res) => {
 
     Posts.update(req.params.id, req.body)
     .then(post => {
-        if(post){
-            res.status(200).json(post);
-        } else{
-            res.status(404).json({ message: 'The post with the specified ID does not exist'})
-        }
+        Posts.findById(req.params.id)
+        .then(innerPost => {
+            if(innerPost){
+                res.status(200).json(innerPost)
+            }else{
+                res.status(404).json({ message: 'The post with the specified ID does not exist'})
+            }
+        })
+        // if(post){
+        //     res.status(200).json(post);
+        // } else{
+        //     res.status(404).json({ message: 'The post with the specified ID does not exist'})
+        // }
     })
     .catch(error => {
         res.status(500).json({ message: 'The post information could not be modified'})
